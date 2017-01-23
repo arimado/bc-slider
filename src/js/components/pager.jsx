@@ -2,23 +2,50 @@ import React from 'react'
 import Supporter from 'js/components/supporter'
 
 class Pager extends React.Component {
-  componentDidMount() {
-    const { getSupporters } = this.props
-    const { currentPage, currentPageSize } = this.props.state.queryState
+
+  componentWillMount() {
+
+    // /**
+    //    * # Pre-fetch mechanism
+    //    *
+    //    * Pre-fetch more results as the pager approaches the limit in client storage.
+    //    * - Only allow prefetch mechanism after app has fetched its first batch
+    //    *   ( hence null check on query state 'pageCount')
+    //    */
+    //
+    // console.log('componentWillMount ############')
+    //
+    // const { isFetching, supporters, pageSize, page: pagerPage } = this.props.state.pagerState
+    // const { currentPage: currentQueryPage, currentPageSize: currentQueryPageSize, pageCount } = this.props.state.queryState
+    //
+    // const offset = ( pagerPage - 1 ) * pageSize
+    // const offsetLength = pageSize + offset
+    // const supportersLeft = supporters.slice(offset + offsetLength, supporters.length).length
+    //
+    // if ( supportersLeft <= pageSize && !isFetching && pageCount !== null ) {
+    //     console.log('only 4 left go fetch more');
+    //     getSupporters( currentQueryPage + 1, currentQueryPageSize );
+    // }
+
+  }
+
+  constructor(props) {
+    super(props);
+    const { getSupporters } = props
+    const { currentPage, currentPageSize } = props.state.queryState
     getSupporters( currentPage, currentPageSize );
   }
+
   render() {
-    const { supporters, pagerSize, page: pagerPage } = this.props.state.pagerState
 
-    const offset = ( pagerPage - 1 ) * pagerSize
-    const offsetLength = pagerSize + offset
+    const { pagerState, queryState } = this.props.state
+    const { isFetching, supporters, pageSize, page: pagerPage } = pagerState
+    const { getSupporters } = this.props
+
+    const offset = ( pagerPage - 1 ) * pageSize
+    const offsetLength = pageSize + offset
+
     const currentSupporters = supporters.slice(offset, offsetLength)
-    const supportersLeft = supporters.slice(offset, supporters.length).length
-
-    // if ( supportersLeft <= pagerSize ) {
-    //   console.log('fetching more people')
-    //   getSupporters(pagerPage, pagerSize);
-    // }
 
     return(
       <div className="pager flex-col">
@@ -31,9 +58,9 @@ class Pager extends React.Component {
             Prev
           </div>
           <div className="supporters flex-row">
-            { currentSupporters.map((s, i) => <Supporter key={i} data={s}/>) }
+            { currentSupporters.map((s, i) => <Supporter key={i} index={i} data={s}/>) }
           </div>
-          <div className="arrow right" onClick={()=>{ this.props.nextPage() }}>
+          <div className="arrow right" onClick={()=>{ this.props.attemptNextPage(pagerState, queryState) }}>
             Next
           </div>
         </div>
@@ -51,12 +78,12 @@ class Pager extends React.Component {
 // -----------------------------------------------------------------------------
 
 import { connect } from 'react-redux';
-import { getSupporters, nextPage, prevPage } from 'js/actions'
+import { getSupporters, attemptNextPage, prevPage } from 'js/actions'
 
 var mapStateToProps = state => ({ state })
 var mapDispatchToProps = (dispatch) => ({
     getSupporters: (pageNumber, pageSize) => dispatch(getSupporters(pageNumber, pageSize)),
-    nextPage: () => dispatch(nextPage()),
+    attemptNextPage: (pagerState, queryState) => dispatch(attemptNextPage(pagerState, queryState)),
     prevPage: () => dispatch(prevPage())
 })
 

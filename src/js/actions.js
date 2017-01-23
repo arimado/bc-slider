@@ -23,6 +23,20 @@ export const recieveSupporters = (supporters) => ({
     data: supporters
 })
 
+export const attemptNextPage = (pagerState, queryState) => {
+  if ( !pagerState || !queryState) {
+    throw new Error('undefined parameters: ', pagerState, queryState)
+    return
+  }
+  return dispatch => {
+    dispatch(nextPage());
+    if ( hasReachedLimit(pagerState) && hasFetchedOnce(queryState) ) {
+      console.log('get supporters')
+      dispatch(getSupporters(queryState.currentPage + 1, queryState.currentPageSize))
+    }
+  }
+}
+
 export const getSupporters = (pageNumber, pageSize) => {
   return dispatch => {
     dispatch(fetchData())
@@ -42,6 +56,43 @@ function fetchSupporters(pageNumber, pageSize) {
   headers.append('apiKey', '41B11B5B-5F6D-4F18-9B8C-C7DCEF22F759')
   return fetch(`${API}?pageNumber=${pageNumber}&pageSize=${pageSize}`, { headers })
 }
+
+function hasFetchedOnce(queryState) {
+  if ( queryState.pageCount !== null ) return true
+  return false
+}
+
+
+function hasReachedLimit({supporters, page: pagerPage, pageSize, isFetching}) {
+  const offset = ( pagerPage - 1 ) * pageSize
+  const offsetLength = pageSize + offset
+  const supportersLeft = supporters.slice(offsetLength, supporters.length).length
+  // console.log('##### LIMIT CHECK ########')
+  // console.log('offset: ', offset);
+  // console.log('offsetLenfth: ', offsetLength)
+  // console.log('supportersLeft: ', supportersLeft)
+  // console.log('pageSize: ', pageSize)
+  // console.log('###########################')
+  if ( supportersLeft <= pageSize && !isFetching ) {
+      console.log('only 4 left go fetch more');
+      return true;
+  }
+  return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /**
