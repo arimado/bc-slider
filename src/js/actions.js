@@ -30,16 +30,16 @@ export const recieveSupporters = (supporters) => ({
    * The goal of the prefetch mechanism is to prefetch data as the pager
    * approaches its limit in client memory so as to avoid spinning loaders
    * when paginating through. There are two main functions:
-   * 
+   *
    * attemptNextPage()
    *
    * This determines if the app should fetch more data based on where the
-   * current pager is and the result total provided by the endpoint
+   * current pager is and the result total provided by the endpoint.
    *
    * getSupporters()
    *
    * This retreives the data and is wrapped in dispatchers that turn on/off
-   * the isFetching flag in the pagerState reducer
+   * the isFetching flag in the pagerState reducer.
    *
    */
 
@@ -95,7 +95,6 @@ function hasReachedPreFetchLimit({supporters, page: pagerPage, pageSize, isFetch
   const offsetLength = pageSize + offset
   const supportersLeft = supporters.slice(offsetLength, supporters.length).length
   if ( supportersLeft <= pageSize && !isFetching ) {
-      console.log('only 4 left go fetch more');
       return true;
   }
   return false;

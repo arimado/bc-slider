@@ -7,7 +7,7 @@
 }
 
 .flex-col {
-  flex-direction: column;
+  display: flex;
   flex-direction: column;
 }
 
@@ -25,6 +25,18 @@
   justify-content: space-between;
 }
 
+.spinner {
+  justify-content: center;
+  font-size: .8em;
+  text-transform: lowercase;
+  align-items: center;
+  font-style: italic;
+}
+
+.spinner img {
+  width: 30px;
+  margin-top: 10px;
+}
 
 .search {
   display: flex;
@@ -63,4 +75,6 @@
 
 .arrow {
   font-size: 3em;
+  align-items: center;
+  justify-content: center;
 }

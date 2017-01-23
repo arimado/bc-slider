@@ -8,13 +8,18 @@ module.exports = {
         publicPath: '/dist/'
     },
     resolve: {
-      extensions: ['', '.js', '.jsx', '.json'],
+      extensions: ['', '.js', '.jsx', '.json', '.svg'],
       root: path.resolve(__dirname, './src'),
     },
     module: {
         loaders: [
             { test: /\.css$/, loader: "style!css" },
-            { test: /\.jsx?$/, exclude: /node_modules/, loader: "babel-loader" }
+            { test: /\.jsx?$/, exclude: /node_modules/, loader: "babel-loader" },
+            {
+                test: /\.(jpg|jpeg|gif|png|svg)$/,
+                exclude: /node_modules/,
+                loader:'url-loader?limit=1024&name=assets/[name].[ext]'
+            },
         ]
     },
     devtool: 'source-map'

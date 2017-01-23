@@ -1,5 +1,6 @@
 import React from 'react'
 import Supporter from 'js/components/supporter'
+import Spinner from 'js/components/spinner'
 
 class Pager extends React.Component {
 
@@ -29,22 +30,26 @@ class Pager extends React.Component {
     const isBelowMax = offsetLength <= totalCount
 
     return(
-      <div className="pager flex-col">
+      <div className="pager">
         <div className="flex-row header">
           <h1 className="flex"> Team Issac </h1>
+          <div className="spinner flex-col">
+            <img src={spinner} />
+            Fetching more runners
+          </div>
           <div className="search">
             <input type="text" placeholder="Find a runner"></input>
           </div>
         </div>
         <div className="flex-row">
-          <div className="arrow left" onClick={()=> { isAboveMin ? this.props.prevPage() : null }}>
-            👈
+          <div className="arrow left flex-col" onClick={()=> { isAboveMin ? this.props.prevPage() : null }}>
+            <div> ˂ </div>
           </div>
           <div className="supporters flex-row">
             { currentSupporters.map((s, i) => <Supporter key={i} index={i} data={s}/>) }
           </div>
-          <div className="arrow right" onClick={()=>{ isBelowMax ? this.props.attemptNextPage(pagerState, queryState) : null }}>
-            👉
+          <div className="arrow right flex-col" onClick={()=>{ isBelowMax ? this.props.attemptNextPage(pagerState, queryState) : null }}>
+            <div> ˃ </div>
           </div>
         </div>
       </div>
@@ -56,7 +61,7 @@ class Pager extends React.Component {
 // REDUX CONTAINER -------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 import { getSupporters, attemptNextPage, prevPage } from 'js/actions'
 
 var mapStateToProps = state => ({ state })
