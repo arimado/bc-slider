@@ -7,7 +7,6 @@ class Pager extends React.Component {
     super(props);
 
     // Initial API call
-
     const { getSupporters } = props
     const { currentPage, currentPageSize } = props.state.queryState
     getSupporters( currentPage, currentPageSize );

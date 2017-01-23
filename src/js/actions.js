@@ -23,6 +23,26 @@ export const recieveSupporters = (supporters) => ({
     data: supporters
 })
 
+
+/**
+   * # PREFETCH MECHANISM
+   *
+   * The goal of the prefetch mechanism is to prefetch data as the pager
+   * approaches its limit in client memory so as to avoid spinning loaders
+   * when paginating through. There are two main functions:
+   * 
+   * attemptNextPage()
+   *
+   * This determines if the app should fetch more data based on where the
+   * current pager is and the result total provided by the endpoint
+   *
+   * getSupporters()
+   *
+   * This retreives the data and is wrapped in dispatchers that turn on/off
+   * the isFetching flag in the pagerState reducer
+   *
+   */
+
 export const attemptNextPage = (pagerState, queryState) => {
   if ( !pagerState || !queryState) {
     throw new Error('undefined parameters: ', pagerState, queryState)
@@ -32,9 +52,8 @@ export const attemptNextPage = (pagerState, queryState) => {
 
     dispatch(nextPage())
     // Fetch from the API if there is still stuff to fetch
-
     if ( hasFetchedOnce(queryState) && hasReachedPreFetchLimit(pagerState) && !hasReachedQueryLimit(queryState) ) {
-           dispatch(getSupporters(queryState.currentPage + 1, queryState.currentPageSize))
+      dispatch(getSupporters(queryState.currentPage + 1, queryState.currentPageSize))
     }
   }
 }
@@ -81,13 +100,3 @@ function hasReachedPreFetchLimit({supporters, page: pagerPage, pageSize, isFetch
   }
   return false;
 }
-
-
-
-/**
-   * # getReleaseImage
-   *
-   * The goal of this function is to get an image
-   *
-   *
-   */
