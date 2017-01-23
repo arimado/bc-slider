@@ -11,7 +11,6 @@ class Pager extends React.Component {
     const { getSupporters } = props
     const { currentPage, currentPageSize } = props.state.queryState
     getSupporters( currentPage, currentPageSize );
-
   }
 
   render() {
@@ -33,10 +32,7 @@ class Pager extends React.Component {
       <div className="pager">
         <div className="flex-row header">
           <h1 className="flex"> Team Issac </h1>
-          <div className="spinner flex-col">
-            <img src={spinner} />
-            Fetching more runners
-          </div>
+          { isFetching ? <Spinner /> : null }
           <div className="search">
             <input type="text" placeholder="Find a runner"></input>
           </div>
