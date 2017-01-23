@@ -14,6 +14,27 @@
 .pager {
   max-width: 800px;
   border: 1px solid black;
+  box-sizing: border-box;
+  padding: 20px;
+  margin: auto;
+}
+
+.header {
+  box-sizing: border-box;
+  padding: 0 59px 0 59px;
+  justify-content: space-between;
+}
+
+
+.search {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.search input {
+  padding: 10px;
+  font-size: 1em;
 }
 
 .supporters {
@@ -24,8 +45,22 @@
   flex: 1;
   box-sizing: border-box;
   margin: 10px;
-  border: 1px solid grey;
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+.profile-photo {
+}
+
+.profile-photo img {
+  width: 100px;
+  width: 100px;
+  border-radius: 400px;
+  margin: auto;
+  display: block;
+}
+
+.arrow {
+  font-size: 3em;
 }

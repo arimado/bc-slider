@@ -29,10 +29,12 @@ export const attemptNextPage = (pagerState, queryState) => {
     return
   }
   return dispatch => {
-    dispatch(nextPage());
-    if ( hasReachedLimit(pagerState) && hasFetchedOnce(queryState) ) {
-      console.log('get supporters')
-      dispatch(getSupporters(queryState.currentPage + 1, queryState.currentPageSize))
+
+    dispatch(nextPage())
+    // Fetch from the API if there is still stuff to fetch
+
+    if ( hasFetchedOnce(queryState) && hasReachedPreFetchLimit(pagerState) && !hasReachedQueryLimit(queryState) ) {
+           dispatch(getSupporters(queryState.currentPage + 1, queryState.currentPageSize))
     }
   }
 }
@@ -62,36 +64,23 @@ function hasFetchedOnce(queryState) {
   return false
 }
 
+function hasReachedQueryLimit({ pageCount, currentPage }) {
+  if ( currentPage === pageCount ) {
+    return true
+  }
+  return false
+}
 
-function hasReachedLimit({supporters, page: pagerPage, pageSize, isFetching}) {
+function hasReachedPreFetchLimit({supporters, page: pagerPage, pageSize, isFetching}) {
   const offset = ( pagerPage - 1 ) * pageSize
   const offsetLength = pageSize + offset
   const supportersLeft = supporters.slice(offsetLength, supporters.length).length
-  // console.log('##### LIMIT CHECK ########')
-  // console.log('offset: ', offset);
-  // console.log('offsetLenfth: ', offsetLength)
-  // console.log('supportersLeft: ', supportersLeft)
-  // console.log('pageSize: ', pageSize)
-  // console.log('###########################')
   if ( supportersLeft <= pageSize && !isFetching ) {
       console.log('only 4 left go fetch more');
       return true;
   }
   return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
