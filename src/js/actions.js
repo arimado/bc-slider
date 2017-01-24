@@ -1,9 +1,4 @@
-const API = 'https://dev.bluechilli.com/grassrootz/api/campaigns/9/supporters'
-
-export const parseJsonIfOkay = response => {
-  if (response.ok) return response.json()
-  else throw new Error("Response is not okay")
-}
+import API from 'src/js/constants'
 
 export const FETCH_DATA = 'FETCH_DATA'
 export const fetchData = () => ({ type: FETCH_DATA })
@@ -18,8 +13,7 @@ export const PREV_PAGE = 'PREV_PAGE'
 export const prevPage = () => ({ type: PREV_PAGE })
 
 export const RECEIVE_SUPPORTERS = 'RECEIVE_SUPPORTERS'
-export const recieveSupporters = (supporters) => ({
-    type: RECEIVE_SUPPORTERS,
+export const recieveSupporters = (supporters) => ({ type: RECEIVE_SUPPORTERS,
     data: supporters
 })
 
@@ -29,7 +23,9 @@ export const recieveSupporters = (supporters) => ({
    *
    * The goal of the prefetch mechanism is to prefetch data as the pager
    * approaches its limit in client memory so as to avoid spinning loaders
-   * when paginating through. There are two main functions:
+   * when paginating through. There are two main functions: attemptNextPage()
+   * and getSupporters(), both of which, use the thunk-wrapped dispatches to
+   * make async mutations to the store.
    *
    * attemptNextPage()
    *
@@ -49,7 +45,6 @@ export const attemptNextPage = (pagerState, queryState) => {
     return
   }
   return dispatch => {
-
     dispatch(nextPage())
     // Fetch from the API if there is still stuff to fetch
     if ( hasFetchedOnce(queryState) && hasReachedPreFetchLimit(pagerState) && !hasReachedQueryLimit(queryState) ) {
@@ -58,13 +53,20 @@ export const attemptNextPage = (pagerState, queryState) => {
   }
 }
 
+
+/**
+  * # getSupporters
+  * This uses the fetch API which in fetchSupporters() which returns a promise
+  * with the result that includes an isOk flag
+  */
+
+
 export const getSupporters = (pageNumber, pageSize) => {
   return dispatch => {
     dispatch(fetchData())
     return fetchSupporters(pageNumber, pageSize)
       .then(parseJsonIfOkay)
-      .then(
-        result => {
+      .then(result => {
           dispatch(fetchFinish())
           dispatch(recieveSupporters(result))
         }
@@ -72,10 +74,23 @@ export const getSupporters = (pageNumber, pageSize) => {
   }
 }
 
+/**
+  * # UTIL
+  *
+  * The functions below use function declartions to take advantage of hoisiting
+  * so i can interchangebly use them without thinking about order of operation
+  * dependencies
+  */
+
 function fetchSupporters(pageNumber, pageSize) {
   const headers = new Headers()
   headers.append('apiKey', '41B11B5B-5F6D-4F18-9B8C-C7DCEF22F759')
   return fetch(`${API}?pageNumber=${pageNumber}&pageSize=${pageSize}`, { headers })
+}
+
+function parseJsonIfOkay(response) {
+  if (response.ok) return response.json()
+  else throw new Error("Response is not okay")
 }
 
 function hasFetchedOnce(queryState) {

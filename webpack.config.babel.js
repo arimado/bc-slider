@@ -1,6 +1,6 @@
-const path = require('path')
+import path from 'path'
 
-module.exports = {
+export default = {
     entry: "./src/app.jsx",
     output: {
         path: path.join(__dirname, 'dist'),
@@ -15,8 +15,7 @@ module.exports = {
         loaders: [
             { test: /\.css$/, loader: "style!css" },
             { test: /\.jsx?$/, exclude: /node_modules/, loader: "babel-loader" },
-            {
-                test: /\.(jpg|jpeg|gif|png|svg)$/,
+            { test: /\.(jpg|jpeg|gif|png|svg)$/,
                 exclude: /node_modules/,
                 loader:'url-loader?limit=1024&name=assets/[name].[ext]'
             },
