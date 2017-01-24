@@ -1,67 +1,67 @@
-import API from 'src/js/constants'
+import { API } from 'js/constants'
 
-export const FETCH_DATA = 'FETCH_DATA'
-export const fetchData = () => ({ type: FETCH_DATA })
+const FETCH_DATA = 'FETCH_DATA'
+const fetchData = () => ({ type: FETCH_DATA })
 
-export const FETCH_FINISH = 'FETCH_FINISH'
-export const fetchFinish = () => ({ type: FETCH_FINISH })
+const FETCH_FINISH = 'FETCH_FINISH'
+const fetchFinish = () => ({ type: FETCH_FINISH })
 
-export const NEXT_PAGE = 'NEXT_PAGE'
-export const nextPage = () => ({ type: NEXT_PAGE })
+const NEXT_PAGE = 'NEXT_PAGE'
+const nextPage = () => ({ type: NEXT_PAGE })
 
-export const PREV_PAGE = 'PREV_PAGE'
-export const prevPage = () => ({ type: PREV_PAGE })
+const PREV_PAGE = 'PREV_PAGE'
+const prevPage = () => ({ type: PREV_PAGE })
 
-export const RECEIVE_SUPPORTERS = 'RECEIVE_SUPPORTERS'
-export const recieveSupporters = (supporters) => ({ type: RECEIVE_SUPPORTERS,
-    data: supporters
+const UPDATE_SEARCH = 'UPDATE_SEARCH'
+const updateSearch = (value) => ({ type: UPDATE_SEARCH,
+  data: value
 })
 
+const RECEIVE_SUPPORTERS = 'RECEIVE_SUPPORTERS'
+const recieveSupporters = (supporters) => ({ type: RECEIVE_SUPPORTERS,
+    data: supporters
+})
 
 /**
    * # PREFETCH MECHANISM
    *
    * The goal of the prefetch mechanism is to prefetch data as the pager
    * approaches its limit in client memory so as to avoid spinning loaders
-   * when paginating through. There are two main functions: attemptNextPage()
-   * and getSupporters(), both of which, use the thunk-wrapped dispatches to
-   * make async mutations to the store.
-   *
-   * attemptNextPage()
-   *
-   * This determines if the app should fetch more data based on where the
-   * current pager is and the result total provided by the endpoint.
-   *
-   * getSupporters()
-   *
-   * This retreives the data and is wrapped in dispatchers that turn on/off
-   * the isFetching flag in the pagerState reducer.
+   * when paginating through. All functions involved with the fetching of
+   * data use thunk wrapped dispatches for async api calls.
    *
    */
 
-export const attemptNextPage = (pagerState, queryState) => {
+function attemptNextPage(pagerState, queryState) {
   if ( !pagerState || !queryState) {
     throw new Error('undefined parameters: ', pagerState, queryState)
     return
   }
   return dispatch => {
     dispatch(nextPage())
-    // Fetch from the API if there is still stuff to fetch
-    if ( hasFetchedOnce(queryState) && hasReachedPreFetchLimit(pagerState) && !hasReachedQueryLimit(queryState) ) {
+    attemptNextFetch(pagerState, queryState)(dispatch)
+  }
+}
+
+function attemptNextFetch(pagerState, queryState) {
+  return dispatch => {
+    if ( hasFetchedOnce(queryState) && hasReachedPreFetchLimit(pagerState)  ) {
+      forceFetch(pagerState, queryState)(dispatch)
+    }
+  }
+}
+
+function forceFetch(pagerState, queryState) {
+  return dispatch => {
+    if ( hasReachedQueryLimit(queryState) ) {
+      console.log('dispatch limit')
+    } else {
       dispatch(getSupporters(queryState.currentPage + 1, queryState.currentPageSize))
     }
   }
 }
 
-
-/**
-  * # getSupporters
-  * This uses the fetch API which in fetchSupporters() which returns a promise
-  * with the result that includes an isOk flag
-  */
-
-
-export const getSupporters = (pageNumber, pageSize) => {
+function getSupporters(pageNumber, pageSize) {
   return dispatch => {
     dispatch(fetchData())
     return fetchSupporters(pageNumber, pageSize)
@@ -77,9 +77,10 @@ export const getSupporters = (pageNumber, pageSize) => {
 /**
   * # UTIL
   *
-  * The functions below use function declartions to take advantage of hoisiting
-  * so i can interchangebly use them without thinking about order of operation
-  * dependencies
+  *
+  * fetchSupporters() uses the new Web API 'fetch' a native http library
+  * parseJsonIfOkay() parses the returned response from the fetch API
+  *
   */
 
 function fetchSupporters(pageNumber, pageSize) {
@@ -113,4 +114,19 @@ function hasReachedPreFetchLimit({supporters, page: pagerPage, pageSize, isFetch
       return true;
   }
   return false;
+}
+
+
+export {
+  FETCH_DATA,         fetchData,
+  FETCH_FINISH,       fetchFinish,
+  NEXT_PAGE,          nextPage,
+  PREV_PAGE,          prevPage,
+  UPDATE_SEARCH,      updateSearch,
+  RECEIVE_SUPPORTERS, recieveSupporters,
+
+  attemptNextPage,
+  attemptNextFetch,
+  forceFetch,
+  getSupporters,
 }

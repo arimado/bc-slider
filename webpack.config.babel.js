@@ -1,6 +1,6 @@
-import path from 'path'
+const path = require('path');
 
-export default = {
+module.exports = {
     entry: "./src/app.jsx",
     output: {
         path: path.join(__dirname, 'dist'),

@@ -6,14 +6,16 @@ import {
   GET_SUPPORTERS,
   RECEIVE_SUPPORTERS,
   NEXT_PAGE,
-  PREV_PAGE
+  PREV_PAGE,
+  UPDATE_SEARCH
 } from 'js/actions'
 
 const initialPagerState = {
   isFetching: false,
   supporters: [],
   page: 1,
-  pageSize: 4
+  pageSize: 4,
+  searchValue: ''
 }
 
 const pagerStateReducer = ( state = initialPagerState, action ) => {
@@ -33,6 +35,9 @@ const pagerStateReducer = ( state = initialPagerState, action ) => {
       break
     case PREV_PAGE:
       return Object.assign({}, state, { page: state.page - 1 })
+      break
+    case UPDATE_SEARCH:
+      return Object.assign({}, state, { searchValue: action.data })
       break
     default:
       return state

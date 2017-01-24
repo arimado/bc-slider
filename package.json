@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server --progress --colors --inline --hot",
-    "build": "webpack"
   },
   "author": "Jeremy Arimado",
   "license": "ISC",

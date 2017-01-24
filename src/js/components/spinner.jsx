@@ -1,9 +1,9 @@
 import React from 'react'
 import spinner from '../../assets/spin.svg'
 
-export const Spinner = () => (
+export const Spinner = ({ isFetching }) => (
 <div className="spinner flex-col">
-  <img src={spinner} />
+   { isFetching ? <img src={spinner} /> : null }
 </div>)
 
 
